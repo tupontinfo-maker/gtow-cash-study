@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>200BB ディープ プリフロップ 3bet/4bet レンジ表（6-max）</title>
+<style>
+  :root{
+    --bg:#ffffff; --fg:#1a1a1a; --fg2:#555; --fg3:#888;
+    --border:rgba(0,0,0,.12);
+    --c-value:#d64545; --c-bluff:#e0a82e; --c-call:#3fa34d; --c-fold:rgba(130,130,130,.30);
+  }
+  @media (prefers-color-scheme:dark){
+    :root{ --bg:#191919; --fg:#f2f2f2; --fg2:#bdbdbd; --fg3:#8f8f8f; --border:rgba(255,255,255,.14); --c-fold:rgba(160,160,160,.28); }
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;}
+  .backbar{ position:sticky; top:0; z-index:20; background:#11161f; padding:11px 16px; }
+  .backbar a{ color:#cfe7d8; text-decoration:none; font-size:14px; font-weight:600; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Hiragino Kaku Gothic ProN","Yu Gothic",Meiryo,sans-serif; }
+  .pkr{ font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Hiragino Kaku Gothic ProN","Yu Gothic",Meiryo,sans-serif;
+        color:var(--fg); background:var(--bg); max-width:1080px; margin:0 auto; padding:20px 14px 40px; line-height:1.6; }
+  .pkr h1{ font-size:22px; font-weight:600; margin:0 0 4px; }
+  .pkr h2{ font-size:16px; font-weight:600; margin:26px 0 12px; padding-bottom:6px; border-bottom:1px solid var(--border); }
+  .pkr .sub{ font-size:13px; color:var(--fg3); margin:0 0 18px; }
+  .pkr .legend{ display:flex; flex-wrap:wrap; gap:14px; font-size:13px; color:var(--fg2); align-items:center; margin-bottom:6px; }
+  .pkr .legend span{ display:flex; align-items:center; gap:6px; }
+  .pkr .sw{ width:13px; height:13px; border-radius:3px; flex:0 0 auto; }
+  .pkr .note-legend{ font-size:12px; color:var(--fg3); margin-bottom:16px; }
+  .pkr .grids{ display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); gap:20px; }
+  .pkr .sechead{ grid-column:1/-1; font-size:15px; font-weight:600; color:var(--fg); border-bottom:1px solid var(--border); padding-bottom:6px; margin-top:6px; }
+  .pkr .gtitle{ font-size:14px; font-weight:600; margin-bottom:8px; }
+  .pkr .grid{ display:grid; grid-template-columns:repeat(13,1fr); gap:1.5px; }
+  .pkr .cell{ position:relative; aspect-ratio:1; border-radius:2px; overflow:hidden; display:flex; }
+  .pkr .cell .lbl{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+                   font-size:8.5px; font-weight:600; color:#fff; text-shadow:0 0 2px #000,0 0 1px #000; letter-spacing:-.3px; }
+  .pkr .gnote{ font-size:12px; line-height:1.55; color:var(--fg2); margin-top:8px; }
+  .pkr .howto{ display:flex; flex-direction:column; gap:16px; margin-bottom:8px; }
+  .pkr .ex{ display:flex; align-items:center; gap:14px; }
+  .pkr .exbox{ position:relative; width:60px; height:60px; border-radius:6px; overflow:hidden; display:flex; flex:0 0 auto; }
+  .pkr .exbox .lbl{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:14px; font-weight:600; color:#fff; text-shadow:0 0 2px #000; }
+  .pkr .exname{ font-size:14px; font-weight:600; margin-bottom:6px; }
+  .pkr .extxt{ font-size:13px; color:var(--fg2); }
+  .pkr .extxt b{ color:var(--fg); font-weight:600; }
+  .pkr .rule{ border-top:1px solid var(--border); padding-top:14px; margin-top:6px; }
+  .pkr .rrow{ display:flex; align-items:center; gap:10px; font-size:13px; color:var(--fg2); margin-bottom:8px; }
+  .pkr .rrow b{ color:var(--fg); font-weight:600; }
+  .pkr .rsw{ width:20px; height:20px; border-radius:4px; flex:0 0 auto; }
+</style>
+</head>
+<body>
+<div class="backbar"><a href="index.html">← 勉強ノートに戻る</a></div>
+<div class="pkr">
+  <h1>200BB ディープ プリフロップ 3bet / 4bet レンジ表（6-max）</h1>
+  <p class="sub">オープン2.5BB／3bet IP≈8BB・OOP≈10BB／4bet≈3betの2.2倍／5bet=オールイン想定。各セルは頻度ミックス（帯の幅＝そのアクションの割合）。ソルバー近似値。</p>
+
+  <div class="legend">
+    <span><span class="sw" style="background:var(--c-value)"></span>バリュー（3bet/4bet/5betジャム）</span>
+    <span><span class="sw" style="background:var(--c-bluff)"></span>ブラフ（自分から3betするが降ろし目的）</span>
+    <span><span class="sw" style="background:var(--c-call)"></span>コール／フラット</span>
+    <span><span class="sw" style="background:var(--c-fold)"></span>フォールド</span>
+  </div>
+  <div class="note-legend">赤・オレンジはどちらも「自分から3betする」。違いは理由だけ（赤=強い／オレンジ=降ろしたい）。緑は上げずにコール。</div>
+
+  <h2>セル1個の読み方</h2>
+  <div class="howto" id="howto"></div>
+  <div class="rule">
+    <div class="rrow"><span class="rsw" style="background:var(--c-value)"></span><span><b>赤</b> ＝ 自分から3bet・<b>バリュー</b>（4bet来ても続行）</span></div>
+    <div class="rrow"><span class="rsw" style="background:var(--c-bluff)"></span><span><b>オレンジ</b> ＝ 自分から3bet・<b>ブラフ</b>（4bet来たら降りる）</span></div>
+    <div class="rrow"><span class="rsw" style="background:var(--c-call)"></span><span><b>緑</b> ＝ 上げずに<b>コール</b>（フラット）</span></div>
+    <div class="rrow"><span class="rsw" style="background:var(--c-fold)"></span><span><b>灰</b> ＝ <b>フォールド</b></span></div>
+  </div>
+
+  <div class="grids" id="grids"></div>
+</div>
+
+<script>
+const R=['A','K','Q','J','T','9','8','7','6','5','4','3','2'];
+function handAt(i,j){const a=R[i],b=R[j];if(i===j)return a+b;if(i<j)return a+b+'s';return b+a+'o';}
+const COL={v:'var(--c-value)',b:'var(--c-bluff)',c:'var(--c-call)',f:'var(--c-fold)'};
+
+function buildCell(hand,arr,size){
+ const v=arr?arr[0]:0,b=arr?arr[1]:0,c=arr?arr[2]:0,f=Math.max(0,100-v-b-c);
+ const cell=document.createElement('div'); cell.className='cell';
+ [['v',v],['b',b],['c',c],['f',f]].forEach(([k,w])=>{if(w<=0)return;const s=document.createElement('div');s.style.cssText='height:100%;width:'+w+'%;background:'+COL[k]+';';cell.appendChild(s);});
+ const l=document.createElement('span'); l.className='lbl'; l.textContent=hand; cell.appendChild(l);
+ return cell;
+}
+
+/* ---- how to read ---- */
+const HOWTO=[
+ {name:'例1：A3s が「オレンジ100%」', seg:[0,100,0], hand:'A3s', txt:'＝ <b>毎回ブラフで3bet（レイズ）する</b>。バリューではないので4betされたら降りる側。降ろし目的の手。'},
+ {name:'例2：A9s が「オレンジ30% / 緑35% / 灰35%」', seg:[0,30,35], hand:'A9s', txt:'＝ 10回配られたら <b>3回ブラフ3bet・3〜4回コール・3〜4回フォールド</b>。1つの手でも状況で散らす＝ミックス。'},
+ {name:'例3：QQ が「赤65% / 緑35%」', seg:[65,0,35], hand:'QQ', txt:'＝ <b>65%バリュー3bet・35%はフラット</b>。赤は4betされても続行できる強い側。'},
+];
+const ht=document.getElementById('howto');
+HOWTO.forEach(e=>{
+ const wrap=document.createElement('div');
+ const nm=document.createElement('div'); nm.className='exname'; nm.textContent=e.name; wrap.appendChild(nm);
+ const ex=document.createElement('div'); ex.className='ex';
+ const box=buildCell(e.hand,e.seg); box.className='exbox'; ex.appendChild(box);
+ const t=document.createElement('div'); t.className='extxt'; t.innerHTML=e.txt; ex.appendChild(t);
+ wrap.appendChild(ex); ht.appendChild(wrap);
+});
+
+/* ---- range grids ---- */
+const ITEMS=[
+ {header:'A. あなたが3betする側（オープンに対して）— ポジション別'},
+
+ {t:'A1. BTN ← COオープン（IPで最広）',
+  note:'後ろがSB/BBだけ＝位置最強。緑（フラット）が最大に広がり、JJ/AQsは半分3bet・半分フラット。これが緩和の上限。',
+  hands:{"AA":[85,0,15],"KK":[82,0,18],"QQ":[65,0,35],"JJ":[50,0,50],"TT":[15,0,85],"99":[5,0,93],"88":[0,0,95],"77":[0,0,93],"66":[0,0,90],"55":[0,0,88],"44":[0,0,85],"33":[0,0,82],"22":[0,0,80],"AKs":[78,0,22],"AKo":[72,0,28],"AQs":[45,0,55],"AJs":[15,0,85],"ATs":[0,0,90],"A9s":[0,0,75],"A8s":[0,5,60],"A7s":[0,0,55],"A6s":[0,0,50],"A5s":[0,55,25],"A4s":[0,50,15],"A3s":[0,45,0],"A2s":[0,40,0],"KQs":[15,0,85],"KJs":[0,0,90],"KTs":[0,0,85],"K9s":[0,30,40],"QJs":[0,0,90],"QTs":[0,0,85],"Q9s":[0,25,40],"JTs":[0,0,90],"J9s":[0,0,70],"T9s":[0,0,85],"T8s":[0,0,60],"98s":[0,0,80],"97s":[0,0,50],"87s":[0,0,75],"86s":[0,0,45],"76s":[0,0,70],"75s":[0,30,20],"65s":[0,0,60],"64s":[0,25,15],"54s":[0,0,55],"AQo":[0,0,80],"AJo":[0,0,65],"ATo":[0,0,45],"KQo":[0,0,70],"KJo":[0,0,50],"QJo":[0,0,45]}},
+
+ {t:'A2. CO ← UTGオープン  ★BTNとの違い',
+  note:'後ろにBTN/SB/BBの3人＝スクイーズ&マルチで実現率↓。だからBTNよりフラットを大幅に削る：A9s/98s/AQoはほぼ降り、KTs/QTs/T9sも半減。バリュー3betとセット狙いペアは残すが投機ハンドは呼ばず降りる。',
+  hands:{"AA":[80,0,20],"KK":[80,0,20],"QQ":[72,0,28],"JJ":[35,0,65],"TT":[8,0,82],"99":[0,0,90],"88":[0,0,88],"77":[0,0,85],"66":[0,0,80],"55":[0,0,75],"44":[0,0,68],"33":[0,0,62],"22":[0,0,60],"AKs":[80,0,20],"AKo":[78,0,22],"AQs":[18,0,72],"AJs":[0,0,70],"ATs":[0,0,55],"A9s":[0,0,30],"A8s":[0,0,20],"A5s":[0,50,12],"A4s":[0,40,8],"KQs":[8,0,80],"KJs":[0,0,65],"KTs":[0,0,45],"QJs":[0,0,70],"QTs":[0,0,45],"JTs":[0,0,70],"T9s":[0,0,55],"98s":[0,0,45],"87s":[0,0,38],"76s":[0,0,35],"65s":[0,0,25],"54s":[0,0,18],"AQo":[0,0,35],"KQo":[0,0,20]}},
+
+ {t:'A3. SB ← BTNオープン（ポラー＝3bet or 降り）',
+  note:'OOP＋BB残り＝フラットの実現率が最悪。だから緑がほぼ消える。最強域は厚く3bet（赤）、スーテッドAx/スーコネで降ろしブラフ（黄）、中間は素直に降りる。',
+  hands:{"AA":[90,0,10],"KK":[90,0,10],"QQ":[88,0,12],"JJ":[80,0,20],"TT":[68,0,22],"99":[55,0,25],"88":[42,0,23],"77":[35,0,20],"66":[28,0,12],"55":[26,0,10],"44":[22,0,8],"33":[20,0,6],"22":[20,0,6],"AKs":[85,0,15],"AKo":[80,0,20],"AQs":[70,0,25],"AQo":[55,0,12],"AJs":[55,0,22],"AJo":[30,0,3],"ATs":[42,0,18],"ATo":[18,0,0],"KQs":[55,0,25],"KQo":[28,0,4],"KJs":[42,0,15],"KJo":[15,0,0],"KTs":[30,0,10],"QJs":[35,0,15],"QTs":[22,0,8],"JTs":[32,0,12],"T9s":[25,0,12],"98s":[20,0,10],"87s":[18,0,8],"76s":[15,0,8],"65s":[12,0,5],"54s":[10,0,4],"A5s":[0,60,0],"A4s":[0,55,0],"A3s":[0,50,0],"A2s":[0,45,0],"A9s":[0,40,8],"A8s":[0,35,6],"A7s":[0,30,4],"A6s":[0,28,0],"K9s":[0,25,0],"K8s":[0,20,0],"Q9s":[0,18,8],"J9s":[0,15,6],"T8s":[0,12,0],"97s":[0,10,0],"86s":[0,10,0],"75s":[0,10,0],"64s":[0,10,0]}},
+
+ {t:'A4. BB ← BTNオープン（OOPだが価格で広く防衛）',
+  note:'アクションを閉じる&ポットオッズが良い→過半を防衛。ただし全部が部分参加（20〜75%）。3betはポラー、中間は薄い緑。SBと違い降りずに呼ぶが増えるのは、追加で1人も残らずオッズが付くから。',
+  hands:{"AA":[80,0,20],"KK":[80,0,20],"QQ":[68,0,32],"JJ":[45,0,55],"TT":[20,0,80],"99":[0,0,90],"88":[0,0,90],"77":[0,0,85],"66":[0,0,85],"55":[0,0,82],"44":[0,0,72],"33":[0,0,70],"22":[0,0,68],"AKs":[80,0,20],"AKo":[70,0,30],"AQs":[45,0,55],"AJs":[15,0,70],"ATs":[0,0,75],"A9s":[0,30,35],"A8s":[0,25,30],"A7s":[0,0,45],"A6s":[0,0,40],"A5s":[0,45,20],"A4s":[0,40,15],"A3s":[0,35,10],"A2s":[0,30,10],"KQs":[10,0,75],"KJs":[0,0,75],"KTs":[0,0,70],"K9s":[0,25,30],"K8s":[0,20,18],"K7s":[0,0,30],"K6s":[0,0,25],"K5s":[0,20,18],"QJs":[0,0,75],"QTs":[0,0,70],"Q9s":[0,20,33],"Q8s":[0,0,35],"Q7s":[0,0,20],"JTs":[0,0,75],"J9s":[0,0,55],"J8s":[0,0,35],"T9s":[0,0,70],"T8s":[0,0,50],"98s":[0,0,65],"97s":[0,0,40],"87s":[0,25,45],"86s":[0,0,35],"76s":[0,0,55],"75s":[0,0,30],"65s":[0,0,50],"64s":[0,0,25],"54s":[0,0,45],"53s":[0,0,25],"AQo":[0,0,75],"AJo":[0,0,60],"ATo":[0,0,45],"A9o":[0,0,30],"KQo":[0,0,65],"KJo":[0,0,50],"KTo":[0,0,40],"K9o":[0,0,20],"QJo":[0,0,50],"QTo":[0,0,40],"Q9o":[0,0,20],"JTo":[0,0,45],"J9o":[0,0,25],"T9o":[0,0,40],"T8o":[0,0,20],"98o":[0,0,30]}},
+
+ {header:'B. あなたがオープン→3betされた側 — オープン位置別（4bet/コール/降り）'},
+
+ {t:'B1. UTGでオープン → 3betされた',
+  note:'自分のレンジが強い→ほとんど降りない。4betはQQ+/AK、JJ-22とブロードウェイはコールで続行。QQですら半分はコールして深く回す。フォールド域が狭いのがUTGの特徴。',
+  hands:{"AA":[80,0,20],"KK":[80,0,20],"QQ":[50,0,50],"JJ":[10,0,85],"TT":[0,0,80],"99":[0,0,70],"88":[0,0,65],"77":[0,0,60],"66":[0,0,50],"55":[0,0,45],"44":[0,0,38],"33":[0,0,35],"22":[0,0,35],"AKs":[68,0,32],"AKo":[58,0,42],"AQs":[15,0,80],"AQo":[0,0,40],"AJs":[0,0,72],"ATs":[0,0,52],"KQs":[0,0,70],"KJs":[0,0,50],"KTs":[0,0,35],"QJs":[0,0,55],"QTs":[0,0,38],"JTs":[0,0,55],"T9s":[0,0,48],"98s":[0,0,42],"87s":[0,0,38],"76s":[0,0,35],"65s":[0,0,25],"A5s":[0,45,15],"A4s":[0,38,10]}},
+
+ {t:'B2. BTNでオープン → ブラインドに3betされた',
+  note:'自分のレンジが超広い→大量に降りる。スティールのゴミは全部フォールド（灰色だらけ）。4betは最強＋A5s系ブラフ、コールは中堅だけ。B1と比べフォールド域が激増＝広く開けたぶん3betに降ろされる対称性。',
+  hands:{"AA":[78,0,22],"KK":[78,0,22],"QQ":[55,0,45],"JJ":[30,0,70],"TT":[10,0,72],"99":[0,0,58],"88":[0,0,52],"77":[0,0,48],"66":[0,0,42],"55":[0,0,38],"44":[0,0,30],"33":[0,0,28],"22":[0,0,28],"AKs":[68,0,32],"AKo":[55,0,45],"AQs":[25,0,70],"AQo":[0,0,42],"AJs":[10,0,62],"AJo":[0,0,25],"ATs":[0,0,48],"ATo":[0,0,12],"A9s":[0,0,30],"A5s":[0,45,8],"A4s":[0,40,6],"A3s":[0,30,4],"KQs":[0,0,58],"KQo":[0,0,28],"KJs":[0,0,42],"KJo":[0,0,12],"KTs":[0,0,32],"K9s":[0,18,10],"QJs":[0,0,48],"QTs":[0,0,32],"Q9s":[0,0,18],"JTs":[0,0,48],"J9s":[0,0,22],"T9s":[0,0,42],"T8s":[0,0,18],"98s":[0,0,38],"87s":[0,0,35],"76s":[0,0,32],"65s":[0,0,22],"54s":[0,0,18]}},
+
+ {header:'C. あなたが3bet→4betされた（5betジャム/コール/降り）'},
+
+ {t:'C1. 3betして4betが返ってきた  ★最重要',
+  note:'赤=5betジャムは純バリュー（AA/KK中心、AKsは40%だけジャム/残りコール）。緑=4betをコールして回す（QQ/JJ/TT/AQ）。3betブラフ（A5s等）はほぼ全降り＝5betブラフは200BBでは割に合わない。',
+  hands:{"AA":[75,0,25],"KK":[75,0,25],"QQ":[20,0,70],"JJ":[5,0,75],"TT":[0,0,55],"AKs":[40,0,55],"AKo":[20,0,60],"AQs":[0,0,50],"AQo":[0,0,20],"AJs":[0,0,20],"KQs":[0,0,18],"KJs":[0,0,10],"A5s":[0,0,10],"A4s":[0,0,5]}},
+
+ {header:'D. スクイーズ対応（マルチウェイ）— UTGオープン→自分BTNコール→SBスクイーズ→UTGコール→自分'},
+
+ {t:'D1. BTNコール後にスクイーズされUTGコール → 自分（200BB・アクション閉じる）',
+  note:'ここに出る手は「最初にBTNでコールした手」だけ＝QQ+/AKの大半は3bet済みでキャップされたレンジ。主役はペア＝セット狙い（JJ-22はコール、深さ＋強レンジ相手でインプライド最大）。スーテッドはナッツ性（A5s-A2s）だけ続行、KQs/KJs/AJ・オフは支配され降り。4betはスロープレイのAA-QQ/AKsのみ（2人相手にブラフ4betしない）。※構造はGTO準拠だが多人数プリフロップはHUのように解けない領域＝%は推定値・要更新。',
+  hands:{"AA":[70,0,30],"KK":[65,0,35],"QQ":[45,0,55],"JJ":[10,0,85],"TT":[0,0,90],"99":[0,0,90],"88":[0,0,88],"77":[0,0,85],"66":[0,0,80],"55":[0,0,78],"44":[0,0,72],"33":[0,0,68],"22":[0,0,65],"AKs":[65,0,35],"AQs":[15,0,55],"AJs":[0,0,45],"ATs":[0,0,40],"A9s":[0,0,20],"A8s":[0,0,18],"A7s":[0,0,15],"A6s":[0,0,15],"A5s":[0,0,45],"A4s":[0,0,40],"A3s":[0,0,30],"A2s":[0,0,28],"KQs":[0,0,35],"KJs":[0,0,20],"KTs":[0,0,22],"QJs":[0,0,25],"QTs":[0,0,18],"JTs":[0,0,30],"T9s":[0,0,30],"98s":[0,0,30],"87s":[0,0,28],"76s":[0,0,25],"65s":[0,0,18],"54s":[0,0,12]}},
+];
+
+const root=document.getElementById('grids');
+ITEMS.forEach(it=>{
+ if(it.header){const h=document.createElement('div');h.className='sechead';h.textContent=it.header;root.appendChild(h);return;}
+ const panel=document.createElement('div');
+ const title=document.createElement('div');title.className='gtitle';title.textContent=it.t;panel.appendChild(title);
+ const grid=document.createElement('div');grid.className='grid';
+ for(let i=0;i<13;i++)for(let j=0;j<13;j++){const hd=handAt(i,j);grid.appendChild(buildCell(hd,it.hands[hd]));}
+ panel.appendChild(grid);
+ const note=document.createElement('div');note.className='gnote';note.textContent=it.note;panel.appendChild(note);
+ root.appendChild(panel);
+});
+</script>
+</body>
+</html>
