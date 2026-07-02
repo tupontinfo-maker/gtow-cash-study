@@ -51,16 +51,24 @@ body{margin:0;font-family:"Segoe UI","Hiragino Kaku Gothic ProN","Meiryo",system
 .post-foot a{color:var(--mut);text-decoration:none}
 .noresult{display:none;text-align:center;color:var(--mut);padding:40px}
 .toTop{position:fixed;right:22px;bottom:22px;background:var(--accent);color:#fff;border:none;border-radius:50%;width:46px;height:46px;font-size:18px;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.2);display:none}
+.menuBtn{display:none;position:fixed;left:16px;bottom:18px;z-index:70;align-items:center;gap:6px;background:var(--accent);color:#fff;border:none;border-radius:26px;padding:12px 18px;font-size:15px;font-weight:700;box-shadow:0 4px 14px rgba(0,0,0,.28);cursor:pointer}
+.backdrop{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:55}
+.drawerClose{display:none;position:absolute;top:10px;right:12px;background:#1b2330;color:#fff;border:none;border-radius:8px;width:34px;height:34px;font-size:18px;line-height:1;cursor:pointer}
 @media(max-width:820px){
  .wrap{grid-template-columns:1fr}
- .side{position:static;height:auto;max-height:none}
- .main{padding:20px 16px 60px}
- .post{padding:22px 18px}
+ .main{padding:16px 14px 84px}
+ .post{padding:20px 16px}
+ .side{position:fixed;top:0;left:0;width:84%;max-width:320px;height:100%;z-index:60;transform:translateX(-100%);transition:transform .25s ease;box-shadow:2px 0 18px rgba(0,0,0,.4);padding-top:52px}
+ .side.open{transform:translateX(0)}
+ .menuBtn{display:flex}
+ .drawerClose{display:block}
+ .backdrop.show{display:block}
 }
 </style></head>
 <body>
 <div class="wrap">
   <nav class="side">
+    <button class="drawerClose" id="drawerClose" aria-label="閉じる">×</button>
     <h1>♠ ポーカー勉強ノート</h1>
     <div class="sub">GTO Wizard Japan 解説まとめ・全21本</div>
     <input id="q" class="search" type="search" placeholder="🔍 キーワード検索（例: 3ベット）">
@@ -2613,6 +2621,8 @@ SBが0.5BB、BBが1BB、合わせて1.5BBがすでに場に置かれています
     <div class="noresult" id="noresult">該当する記事がありません</div>
   </main>
 </div>
+<button class="menuBtn" id="menuBtn" aria-label="目次を開く">☰ 目次</button>
+<div class="backdrop" id="backdrop"></div>
 <button class="toTop" id="toTop" title="上へ">▲</button>
 <script>
 const links=[...document.querySelectorAll('.nav-link')];
@@ -2646,5 +2656,17 @@ posts.forEach(p=>obs.observe(p));
 const tt=document.getElementById('toTop');
 addEventListener('scroll',()=>{tt.style.display=scrollY>600?'block':'none'});
 tt.onclick=()=>scrollTo({top:0,behavior:'smooth'});
+// モバイル・ドロワー目次
+const side=document.querySelector('.side');
+const menuBtn=document.getElementById('menuBtn');
+const backdrop=document.getElementById('backdrop');
+const closeBtn=document.getElementById('drawerClose');
+const isMobile=()=>window.matchMedia('(max-width:820px)').matches;
+function openDrawer(){side.classList.add('open');backdrop.classList.add('show');}
+function closeDrawer(){side.classList.remove('open');backdrop.classList.remove('show');}
+if(menuBtn)menuBtn.addEventListener('click',openDrawer);
+if(backdrop)backdrop.addEventListener('click',closeDrawer);
+if(closeBtn)closeBtn.addEventListener('click',closeDrawer);
+links.forEach(a=>a.addEventListener('click',()=>{ if(isMobile()) closeDrawer(); }));
 </script>
 </body></html>
